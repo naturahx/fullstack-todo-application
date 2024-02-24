@@ -39,12 +39,15 @@ const server = http.createServer((req, res) => {
       body += chunk.toString();
     });
 
-    req.on('end', () => {
+    req.on("end", () => {
       const { title, description } = JSON.parse(body);
       data.push({ title, description });
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end("Data added successfully");
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(data));
     });
+  } else if (method === 'GET' && parsedUrl.pathname === '/posts') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end("Not Found");
