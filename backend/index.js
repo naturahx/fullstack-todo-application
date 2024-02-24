@@ -20,6 +20,16 @@ const server = http.createServer((req, res) => {
   const { method, url: reqUrl } = req;
   const parsedUrl = url.parse(reqUrl, true);
 
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
   if (method === 'GET' && parsedUrl.pathname === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(data));
@@ -33,10 +43,14 @@ const server = http.createServer((req, res) => {
       const { title, description } = JSON.parse(body);
       data.push({ title, description });
       res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("Data added successfully");
     });
   } else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end("Not Found");
   }
 });
 
-server.listen(3000)
+server.listen(3000, () => {
+  console.log('Server running on http://localhost:3000/');
+});
