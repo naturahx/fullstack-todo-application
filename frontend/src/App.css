@@ -1,0 +1,41 @@
+h1 {
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+  margin-left: 50px;
+}
+
+input {
+  margin: 0 10px;
+}
+
+button {
+  background-color: #ff6347; /* красный цвет */
+  color: white; /* белый цвет текста */
+  padding: 6px 50px; /* отступы внутри кнопки */
+  border: none; /* убираем границу */
+  border-radius: 5px; /* скругляем углы */
+  cursor: pointer; /* меняем курсор при наведении */
+}
+
+button:hover {
+  background-color: #922d08; /* изменяем цвет при наведении */
+}
+
+.block {
+  display: flex;
+  justify-content: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+li {
+  list-style: none;
+  border: 2px solid #ff6347;
+  border-radius: 20px;
+  padding: 10px 40px;
+}
