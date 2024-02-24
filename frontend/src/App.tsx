@@ -1,30 +1,28 @@
-import { useState, useEffect, FC } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
+import { addData } from './store/actions';
 
 interface AppItem {
-  title: string,
-  description: string
+  title: string;
+  description: string;
 }
 
-const App:FC<AppItem> = () => {
+const App: FC = () => {
   const [data, setData] = useState<AppItem[]>([]);
+  const dispatch = useDispatch();
+  const dataList = useSelector((state: any) => state.dataList);
 
   useEffect(() => {
-    fetch('http://localhost:3000/')
-    .then(response => response.json())
-    .then(data => setData(data))
-  }, [])
+    setData(dataList);
+  }, [dataList]);
 
   const { register, handleSubmit, reset } = useForm();
 
   const addToList = (formData: Record<string, string>) => {
-    const newItem: AppItem = {
-      title: formData.title,
-      description: formData.description
-    };
-    setData([...data, newItem]);
+    dispatch(addData(formData));
     reset();
-  }
+  };
 
   return (
     <>
@@ -35,8 +33,8 @@ const App:FC<AppItem> = () => {
       </form>
 
       <ul>
-        {data.map((item: AppItem) => (
-          <li>
+        {data.map((item: AppItem, index: number) => (
+          <li key={index}>
             <h3>{item.title}</h3>
             <p>{item.description}</p>
           </li>
