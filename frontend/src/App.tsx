@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useForm } from "react-hook-form";
 import "./App.css";
 
 interface AppItem {
@@ -8,65 +7,54 @@ interface AppItem {
   description: string;
 }
 
-const validationSchema = Yup.object().shape({
-  title: Yup.string().min(3, 'Название должно содержать не менее 3 символов').required('Название обязательно'),
-  description: Yup.string().min(5, 'Описание должно содержать не менее 5 символов').required('Описание обязательно'),
-});
-
 const App: FC = () => {
   const [data, setData] = useState<AppItem[]>([]);
-  
+  const { register, handleSubmit } = useForm<AppItem>(); // Инициализация react-hook-form
+
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     fetch("http://localhost:3000")
       .then((response) => response.json())
-      .then((data) => setData(data));
-  }, [data]);
+      .then((data) => setData(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  };
 
-  const formik = useFormik({
-    initialValues: {
-      title: '',
-      description: '',
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values: any) => {
-      const newData = { title: values.title, description: values.description };
-
-      fetch("http://localhost:3000", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newData),
+  const addPost = (newPost: AppItem) => {
+    fetch("http://localhost:3000", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPost),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        fetchData(); // Обновление данных с сервера после успешного добавления поста
       })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          setData([...data, newData]);
-        })
-        .catch((error) => console.error("Error:", error));
+      .catch((error) => console.error("Error adding post:", error));
+  };
 
-      formik.resetForm();
-    },
-  });
+  const onSubmit = (data: AppItem) => {
+    addPost(data);
+  };
 
   return (
     <>
       <h1>FullStack ToDo</h1>
-      <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <input
           name="title"
           placeholder="Название"
-          value={formik.values.title}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          ref={register({ required: 'Название обязательно', minLength: { value: 3, message: 'Название должно содержать не менее 3 символов' } }) as any}
         />
 
         <input
           name="description"
           placeholder="Описание"
-          value={formik.values.description}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          ref={register({ required: 'Описание обязательно', minLength: { value: 5, message: 'Описание должно содержать не менее 5 символов' } }) as any}
         />
 
         <button type="submit">Добавить</button>
