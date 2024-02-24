@@ -1,46 +1,61 @@
-import React, { FC, useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from 'react-redux';
-import { addData } from './store/actions';
+import React, { FC, useEffect, useState } from 'react';
 
 interface AppItem {
-  title: string;
-  description: string;
+  title: string,
+  description: string
 }
 
-const App: FC = () => {
-  const [data, setData] = useState<AppItem[]>([]);
-  const dispatch = useDispatch();
-  const dataList = useSelector((state: any) => state.dataList);
+const App:FC = () => {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [data, setData] = useState([])
 
   useEffect(() => {
-    setData(dataList);
-  }, [dataList]);
+    fetch('http://localhost:3000')
+    .then(response => response.json())
+    .then(data => setData(data))
+  }, [title])
 
-  const { register, handleSubmit, reset } = useForm();
+  const handleButtonClick = () => {
+    const data = { title: title, description: description };
 
-  const addToList = (formData: Record<string, string>) => {
-    dispatch(addData(formData));
-    reset();
+    fetch('http://localhost:3000', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error:', error));
+      setDescription('')
+      setTitle('')
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(addToList)}>
-        <input {...register("title")} placeholder="Название" />
-        <input {...register("description")} placeholder="Описание" />
-        <button type="submit">Добавить в список</button>
-      </form>
+    <div>
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <input
+        type="text"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <button onClick={handleButtonClick}>Отправить на сервер</button>
 
       <ul>
-        {data.map((item: AppItem, index: number) => (
-          <li key={index}>
+        {data.map((item: AppItem) => (
+          <li>
             <h3>{item.title}</h3>
             <p>{item.description}</p>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 };
 
