@@ -1,12 +1,7 @@
-import express from 'express';
-import bodyParser from 'body-parser';
+import http from 'http';
+import url from 'url';
 
-const app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-let data = [
+const data = [
   {
     "title": "XYII",
     "description": "PEISNIS"
@@ -21,14 +16,27 @@ let data = [
   },
 ];
 
-app.post("/", (req, res) => {
-  const { title, description } = req.body;
-  data.push({ title, description });
-  res.send("Data added successfully");
+const server = http.createServer((req, res) => {
+  const { method, url: reqUrl } = req;
+  const parsedUrl = url.parse(reqUrl, true);
+
+  if (method === 'GET' && parsedUrl.pathname === '/') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+  } else if (method === 'POST' && parsedUrl.pathname === '/') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on('end', () => {
+      const { title, description } = JSON.parse(body);
+      data.push({ title, description });
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+    });
+  } else {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+  }
 });
 
-app.get("/", (req, res) => {
-  res.json(data);
-});
-
-app.listen(3000);
+server.listen(3000)
