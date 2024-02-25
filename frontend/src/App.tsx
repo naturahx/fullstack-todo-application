@@ -92,7 +92,6 @@ const App: FC = () => {
     if (editedPost) {
       editPost(formData, editedPost.id);
       closeModal();
-      reset()
     }
   };
 
