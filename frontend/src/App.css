@@ -1,4 +1,4 @@
-h1 {
+h1, h2 {
   text-align: center;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -21,6 +21,7 @@ button {
   border: none; /* убираем границу */
   border-radius: 5px; /* скругляем углы */
   cursor: pointer; /* меняем курсор при наведении */
+  margin: 0px 6px;
 }
 
 button:hover {
@@ -33,9 +34,19 @@ button:hover {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.list {
+  margin: 15px 0;
+}
+
 li {
   list-style: none;
   border: 2px solid #ff6347;
   border-radius: 20px;
   padding: 10px 40px;
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
